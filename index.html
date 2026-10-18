@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Salon Lucien</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Layout : en-tête fin, colonne unique d'étapes côté client ; agenda en grille horaire côté coiffeur. */
+:root{
+  --bg:#F1F4F2; --surface:#FFFFFF; --ink:#16201C; --muted:#5A6964; --line:#D6DDD9; --shade:#E6EBE8;
+  --accent:#0D6655; --accent-ink:#FFFFFF; --accent-soft:#DAEDE7;
+  --brass:#9C6E24; --brass-soft:#F3E8D4;
+  --danger:#B0362C; --danger-soft:#F6E0DC;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1513; --surface:#171F1C; --ink:#E6EDEA; --muted:#98A7A1; --line:#2B3632; --shade:#1D2622;
+  --accent:#43B79D; --accent-ink:#06201A; --accent-soft:#163630;
+  --brass:#D8A956; --brass-soft:#3A2E19;
+  --danger:#EE7B6F; --danger-soft:#3B1F1B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1513; --surface:#171F1C; --ink:#E6EDEA; --muted:#98A7A1; --line:#2B3632; --shade:#1D2622;
+  --accent:#43B79D; --accent-ink:#06201A; --accent-soft:#163630;
+  --brass:#D8A956; --brass-soft:#3A2E19;
+  --danger:#EE7B6F; --danger-soft:#3B1F1B; color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{margin:0;color:var(--ink);font:15px/1.5 var(--f-body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;letter-spacing:-.015em}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* En-tête */
+header.top{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:12px}
+.brand{font-family:var(--f-display);font-weight:700;font-size:21px;color:var(--ink);text-decoration:none;line-height:1.1}
+.brand small{display:block;font:600 10.5px/1.3 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+nav.tabs{display:flex;gap:2px;background:var(--shade);padding:3px;border-radius:999px;max-width:100%;overflow-x:auto}
+nav.tabs a{padding:7px 13px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:600;font-size:13.5px;white-space:nowrap}
+nav.tabs a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.demo-note{background:var(--brass-soft);color:var(--ink);font-size:13px}
+.demo-note .wrap{padding-block:8px}
+
+/* Boutons et champs */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px/1 var(--f-body);padding:11px 16px;border-radius:10px;cursor:pointer;text-decoration:none}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.danger{background:var(--danger-soft);border-color:var(--danger);color:var(--danger)}
+.btn.sm{padding:8px 11px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+label.f{display:grid;gap:5px;font-weight:600;font-size:13.5px}
+label.f span.h{font-weight:400;color:var(--muted);font-size:12.5px}
+input[type=text],input[type=tel],input[type=email],input[type=password],input[type=date],select,textarea{width:100%;font:15px/1.4 var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{resize:vertical;min-height:64px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+.err{color:var(--danger);font-size:13.5px;min-height:1em;margin:0}
+.pill{display:inline-block;font:600 11.5px/1 var(--f-body);padding:5px 8px;border-radius:999px;letter-spacing:.02em}
+.pill.en_attente{background:var(--brass-soft);color:var(--brass)}
+.pill.confirme{background:var(--accent-soft);color:var(--accent)}
+.pill.bloc{background:var(--shade);color:var(--muted)}
+
+/* Accueil client */
+.hero{display:grid;grid-template-columns:1.35fr 1fr;gap:28px;align-items:end;padding-block:34px 22px}
+.hero h1{font-size:clamp(34px,6.4vw,62px);line-height:.98;margin:0 0 12px;letter-spacing:-.035em}
+.hero p{margin:0;color:var(--muted);max-width:50ch}
+.hero .facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.fact{font-size:13px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.fact.pay{border-color:var(--accent);color:var(--accent);font-weight:600}
+.horaires{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.horaires h3{margin:0 0 8px;font-size:13px;font-family:var(--f-body);text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.horaires dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:14px}
+.horaires dt{font-weight:600}
+.horaires dd{margin:0;text-align:right}
+.horaires dd.closed{color:var(--muted)}
+@media (max-width:760px){.hero{grid-template-columns:1fr;padding-block:24px 16px}}
+
+.steps{display:grid;gap:14px;padding-block:6px 56px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.step.locked{opacity:.48}
+.step.locked > *:not(h2){pointer-events:none}
+.step h2{display:flex;gap:10px;align-items:baseline;margin:0 0 14px;font-size:19px}
+.step h2 .n{font:600 12px/1 var(--f-mono);color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:4px 6px}
+.step h2 .sel{margin-left:auto;font:500 13px/1.3 var(--f-body);color:var(--muted);text-align:right}
+
+.days{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x proximity}
+.day{flex:0 0 76px;scroll-snap-align:start;border:1px solid var(--line);border-radius:12px;padding:9px 4px;text-align:center;background:var(--bg);color:var(--ink);cursor:pointer;font:inherit}
+.day .dw{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.day b{display:block;font-family:var(--f-display);font-size:24px;line-height:1.15}
+.day .mo{display:block;font-size:11.5px;color:var(--muted)}
+.day .st{display:block;margin-top:4px;font-size:11px;font-weight:600;color:var(--accent)}
+.day .st.full{color:var(--muted)}
+.day[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.day[aria-pressed="true"] .dw,.day[aria-pressed="true"] .mo,.day[aria-pressed="true"] .st{color:var(--accent-ink)}
+.day:disabled{opacity:.42;cursor:not-allowed}
+
+.cat{margin:14px 0 8px;font:600 11.5px/1 var(--f-body);text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.cat:first-of-type{margin-top:0}
+.prestas{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.presta{position:relative;display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;background:var(--bg)}
+.presta input{position:absolute;opacity:0;pointer-events:none}
+.presta .nm{font-weight:600}
+.presta .meta{text-align:right;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.presta:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.presta:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.opt{display:flex;align-items:center;gap:8px;border:1px dashed var(--line);border-radius:999px;padding:7px 12px;font-size:13.5px;cursor:pointer}
+.opt:has(input:checked){border-style:solid;border-color:var(--brass);background:var(--brass-soft)}
+.opt:has(input:disabled){opacity:.45;cursor:not-allowed}
+
+.estim{margin-top:16px;padding:14px 16px;border-radius:12px;background:var(--brass-soft);display:grid;gap:10px}
+.estim .row{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.estim .big{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1}
+.estim .detail{font-size:13px;color:var(--muted)}
+.ruler{position:relative;height:22px;border-radius:6px;background:var(--surface);overflow:hidden}
+.ruler .fill{position:absolute;inset:0 auto 0 0;background:var(--brass);opacity:.85;transition:width .25s ease}
+.ruler .ticks{position:absolute;inset:0;background:repeating-linear-gradient(to right,transparent 0 calc(100%/12 - 1px),var(--line) calc(100%/12 - 1px) calc(100%/12))}
+.ruler-legend{display:flex;justify-content:space-between;font:500 11px/1 var(--f-mono);color:var(--muted)}
+
+.slot-group{margin-bottom:12px}
+.slot-group h3{font:600 12px/1 var(--f-body);margin:0 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:6px}
+.slot{font:600 14px/1 var(--f-mono);padding:11px 0;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.slot[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.empty{padding:14px;border-radius:12px;background:var(--shade);color:var(--muted);font-size:14px}
+.empty .btn{margin-top:10px}
+
+.form{display:grid;gap:12px}
+.recap{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg);font-size:14px}
+.confirm{text-align:left;display:grid;gap:14px}
+.confirm h2{margin:0;font-size:26px}
+.code{font:600 30px/1 var(--f-mono);letter-spacing:.18em;padding:14px 16px;border:2px dashed var(--accent);border-radius:12px;display:inline-block;color:var(--accent)}
+
+/* Mon rendez-vous */
+.narrow{max-width:520px;margin:0 auto;padding-block:34px 56px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+.card h2{margin:0 0 6px;font-size:22px}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:12px 0;font-size:14.5px}
+.dl dt{color:var(--muted)}
+.dl dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.confirm-box{border:1px solid var(--danger);background:var(--danger-soft);border-radius:12px;padding:12px;display:grid;gap:10px}
+.row-btns{display:flex;flex-wrap:wrap;gap:8px}
+
+/* Espace coiffeur */
+.pro-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding-block:20px 12px}
+.pro-head h1{margin:0;font-size:26px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.stat .v{font:700 24px/1.2 var(--f-display)}
+.stat.warn{border-color:var(--brass)}
+.pending{background:var(--surface);border:1px solid var(--brass);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.pending h2{margin:0 0 10px;font-size:16px}
+.pend-list{display:grid;gap:8px}
+.pend{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;background:var(--brass-soft)}
+.pend .who{min-width:0}
+.pend .who b{display:block}
+.pend .who span{font-size:13px;color:var(--muted)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.toolbar .grp{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.toolbar .lbl{font:700 16px/1.2 var(--f-display);min-width:0;padding-inline:4px}
+.seg{display:flex;background:var(--shade);border-radius:10px;padding:3px}
+.seg button{border:0;background:none;font:600 13px/1 var(--f-body);color:var(--muted);padding:8px 12px;border-radius:8px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted);margin:10px 0 40px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px}
+
+.ag-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.agenda{display:grid;grid-template-columns:50px repeat(var(--cols),minmax(var(--colmin),1fr))}
+.ag-h{padding:10px 8px;border-bottom:1px solid var(--line);border-left:1px solid var(--line);font-size:13px;line-height:1.25}
+.ag-h b{display:block;font-family:var(--f-display);font-size:15px;text-transform:capitalize}
+.ag-h.today b{color:var(--accent)}
+.ag-h.corner{border-left:0}
+.ag-times{position:relative}
+.ag-times span{position:absolute;right:6px;transform:translateY(-50%);font:500 11px/1 var(--f-mono);color:var(--muted)}
+.ag-col{position:relative;border-left:1px solid var(--line);cursor:copy;
+  background-image:repeating-linear-gradient(to bottom,var(--line) 0 1px,transparent 1px var(--hour)),repeating-linear-gradient(to bottom,transparent 0 calc(var(--hour)/2),var(--shade) calc(var(--hour)/2) calc(var(--hour)/2 + 1px),transparent calc(var(--hour)/2 + 1px) var(--hour))}
+.ag-closed{position:absolute;left:0;right:0;background:repeating-linear-gradient(135deg,var(--shade) 0 6px,transparent 6px 12px);pointer-events:none}
+.ev{position:absolute;left:4px;right:4px;border-radius:8px;padding:4px 7px;text-align:left;font:12px/1.3 var(--f-body);color:var(--ink);overflow:hidden;cursor:pointer;border:1px solid var(--accent);background:var(--accent-soft)}
+.ev .t{font:600 11px/1.2 var(--f-mono);color:var(--accent)}
+.ev b{display:block;font-size:13px}
+.ev .p{display:block;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev.en_attente{border:1px dashed var(--brass);background:var(--brass-soft)}
+.ev.en_attente .t{color:var(--brass)}
+.ev.bloc{border-color:var(--line);background:repeating-linear-gradient(135deg,var(--shade) 0 7px,var(--surface) 7px 14px);color:var(--muted)}
+.ev.bloc .t{color:var(--muted)}
+.ev:hover{z-index:2;box-shadow:0 4px 14px rgba(0,0,0,.14)}
+.now{position:absolute;left:0;right:0;height:2px;background:var(--danger);pointer-events:none;z-index:3}
+.now::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--danger)}
+
+.login{max-width:420px;margin:0 auto;padding-block:40px 60px}
+
+/* Fenêtre */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(8,14,12,.5);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);color:var(--ink);width:min(540px,100%);max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:20px max(18px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px))}
+.sheet h2{margin:0 0 4px;font-size:22px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sheet .x{float:right;border:0;background:var(--shade);color:var(--ink);width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer}
+@media (min-width:700px){.modal{align-items:center}.sheet{border-radius:18px}}
+.sms{display:grid;gap:8px;padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:10px;font-weight:600;font-size:14px;z-index:60;max-width:calc(100% - 32px)}
+footer{border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+footer .wrap{padding-block:18px;display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#reserver"><small>Coiffure &amp; barbier</small><span id="brand-name">Salon</span></a>
+    <nav class="tabs" aria-label="Navigation">
+      <a href="#reserver" data-v="reserver">Réserver</a>
+      <a href="#mon-rdv" data-v="mon-rdv">Mon rendez-vous</a>
+      <a href="#pro" data-v="pro">Espace coiffeur</a>
+    </nav>
+  </div>
+</header>
+<div class="demo-note" id="demo-note" hidden><div class="wrap">Mode démo : les rendez-vous sont enregistrés dans ce navigateur uniquement. Pour un site partagé entre clients et coiffeur, branchez Supabase (voir le README).</div></div>
+
+<main>
+<!-- ============ RÉSERVER ============ -->
+<section id="v-reserver">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <h1 id="hero-title">Réservez votre coupe en une minute.</h1>
+        <p>Choisissez un jour, votre prestation, puis l'heure qui vous arrange. Le temps nécessaire est calculé selon la coupe, et seuls les créneaux assez longs vous sont proposés.</p>
+        <div class="facts">
+          <span class="fact pay">Paiement uniquement au salon</span>
+          <span class="fact" id="fact-adr"></span>
+          <span class="fact mono" id="fact-tel"></span>
+        </div>
+      </div>
+      <aside class="horaires"><h3>Horaires</h3><dl id="horaires"></dl></aside>
+    </div>
+
+    <div class="steps" id="steps">
+      <div class="step" id="s1">
+        <h2><span class="n">1</span>Le jour<span class="sel" id="s1-sel"></span></h2>
+        <div class="days" id="days"></div>
+      </div>
+      <div class="step locked" id="s2">
+        <h2><span class="n">2</span>La prestation<span class="sel" id="s2-sel"></span></h2>
+        <div id="prestas"></div>
+        <div class="opts" id="opts"></div>
+        <div class="estim" id="estim" hidden></div>
+      </div>
+      <div class="step locked" id="s3">
+        <h2><span class="n">3</span>L'heure<span class="sel" id="s3-sel"></span></h2>
+        <div id="slots"></div>
+      </div>
+      <div class="step locked" id="s4">
+        <h2><span class="n">4</span>Vos coordonnées</h2>
+        <form class="form" id="book-form" novalidate>
+          <div class="recap" id="recap"></div>
+          <div class="grid2">
+            <label class="f" for="b-prenom">Prénom<input type="text" id="b-prenom" autocomplete="given-name" maxlength="40" required></label>
+            <label class="f" for="b-tel">Numéro de téléphone<input type="tel" id="b-tel" autocomplete="tel" inputmode="tel" placeholder="06 12 34 56 78" required></label>
+          </div>
+          <label class="f" for="b-note">Précision pour le coiffeur <span class="h">facultatif, ex. « dégradé n°1 sur les côtés »</span><textarea id="b-note" maxlength="200"></textarea></label>
+          <p class="err" id="b-err"></p>
+          <div class="row-btns"><button class="btn primary" type="submit" id="b-submit">Envoyer ma demande</button></div>
+          <p class="muted" style="margin:0;font-size:13px">Aucun paiement en ligne. Vous réglez au salon après la prestation.</p>
+        </form>
+      </div>
+    </div>
+
+    <div class="steps" id="done" hidden></div>
+  </div>
+</section>
+
+<!-- ============ MON RDV ============ -->
+<section id="v-mon-rdv" hidden>
+  <div class="wrap narrow">
+    <div class="card">
+      <h2>Retrouver mon rendez-vous</h2>
+      <p class="muted" style="margin:0 0 14px">Saisissez le code reçu à la réservation et votre numéro de téléphone pour voir ou annuler votre rendez-vous.</p>
+      <form class="form" id="mine-form" novalidate>
+        <div class="grid2">
+          <label class="f" for="m-code">Code<input type="text" id="m-code" maxlength="6" autocomplete="off" style="text-transform:uppercase;font-family:var(--f-mono);letter-spacing:.15em" placeholder="ABC123"></label>
+          <label class="f" for="m-tel">Téléphone<input type="tel" id="m-tel" inputmode="tel" autocomplete="tel"></label>
+        </div>
+        <p class="err" id="m-err"></p>
+        <div class="row-btns"><button class="btn primary" type="submit">Afficher</button></div>
+      </form>
+      <div id="mine-result"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRO ============ -->
+<section id="v-pro" hidden>
+  <div class="wrap">
+    <div class="login" id="pro-login" hidden>
+      <div class="card">
+        <h2>Espace coiffeur</h2>
+        <p class="muted" style="margin:0 0 14px">Connectez-vous pour gérer l'agenda et les demandes.</p>
+        <form class="form" id="login-form" novalidate>
+          <label class="f" for="l-email">Email<input type="email" id="l-email" autocomplete="username"></label>
+          <label class="f" for="l-pw">Mot de passe<input type="password" id="l-pw" autocomplete="current-password"></label>
+          <p class="err" id="l-err"></p>
+          <div class="row-btns"><button class="btn primary" type="submit">Se connecter</button></div>
+          <p class="muted" id="l-hint" style="margin:0;font-size:13px" hidden>Démo : n'importe quel email, mot de passe <b class="mono">demo</b>.</p>
+        </form>
+      </div>
+    </div>
+
+    <div id="pro-app" hidden>
+      <div class="pro-head">
+        <h1>Agenda</h1>
+        <div class="row-btns">
+          <button class="btn primary sm" id="add-rdv">+ Rendez-vous</button>
+          <button class="btn sm" id="add-bloc">Bloquer un créneau</button>
+          <button class="btn sm" id="logout">Déconnexion</button>
+        </div>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="pending" id="pending" hidden></div>
+      <div class="toolbar">
+        <div class="grp">
+          <button class="btn sm" id="prev" aria-label="Précédent">‹</button>
+          <button class="btn sm" id="today">Aujourd'hui</button>
+          <button class="btn sm" id="next" aria-label="Suivant">›</button>
+          <span class="lbl" id="range-lbl"></span>
+        </div>
+        <div class="seg" role="group" aria-label="Affichage">
+          <button type="button" data-mode="jour">Jour</button>
+          <button type="button" data-mode="semaine">Semaine</button>
+        </div>
+      </div>
+      <div class="ag-scroll"><div class="agenda" id="agenda"></div></div>
+      <div class="legend">
+        <span><i style="background:var(--brass-soft);border:1px dashed var(--brass)"></i>À valider</span>
+        <span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>Confirmé</span>
+        <span><i style="background:var(--shade);border:1px solid var(--line)"></i>Bloqué / fermé</span>
+        <span>Touchez une case vide pour ajouter un rendez-vous à cette heure.</span>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><span id="foot-name"></span><span>Paiement sur place uniquement · Annulation possible depuis « Mon rendez-vous »</span></div></footer>
+
+<div class="modal" id="modal" hidden><div class="sheet" role="dialog" aria-modal="true" id="sheet"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* =====================================================================
+   CONFIGURATION — tout ce qu'il faut modifier pour votre salon
+   ===================================================================== */
+const CONFIG = {
+  salon: "Salon Lucien",
+  adresse: "12 rue des Tonneliers, Strasbourg",
+  telephone: "03 88 00 00 00",
+
+  // Laisser vide = mode démo (données dans le navigateur).
+  // Renseigner avec les valeurs de votre projet Supabase pour la vraie version.
+  supabaseUrl: "",
+  supabaseKey: "",
+
+  pas: 15,          // intervalle entre deux créneaux proposés (minutes)
+  delaiMin: 60,     // un client ne peut pas réserver moins de X minutes à l'avance
+  joursMax: 28,     // réservation possible jusqu'à X jours à l'avance
+  maxParTel: 2,     // nombre max de rendez-vous à venir par numéro
+
+  // 0 = dimanche … 6 = samedi. Plusieurs plages possibles par jour.
+  horaires: {
+    0: [],
+    1: [],
+    2: [["09:00","12:00"],["14:00","19:00"]],
+    3: [["09:00","12:00"],["14:00","19:00"]],
+    4: [["09:00","12:00"],["14:00","19:00"]],
+    5: [["09:00","12:00"],["14:00","19:30"]],
+    6: [["08:30","17:00"]]
+  },
+
+  // duree en minutes, prix indicatif en euros (payé au salon).
+  // options:true = les suppléments ci-dessous peuvent s'ajouter.
+  prestations: [
+    {id:"homme",        nom:"Coupe homme",               duree:30,  prix:22, cat:"Coupes",          options:true},
+    {id:"degrade",      nom:"Dégradé américain",         duree:40,  prix:25, cat:"Coupes",          options:true},
+    {id:"femme-courte", nom:"Coupe femme courte",        duree:45,  prix:32, cat:"Coupes",          options:true},
+    {id:"femme-longue", nom:"Coupe femme cheveux longs", duree:60,  prix:42, cat:"Coupes",          options:false},
+    {id:"enfant",       nom:"Coupe enfant (−12 ans)",    duree:20,  prix:15, cat:"Coupes",          options:false},
+    {id:"coupe-barbe",  nom:"Coupe + barbe",             duree:50,  prix:35, cat:"Barbe",           options:true},
+    {id:"barbe",        nom:"Taille de barbe",           duree:20,  prix:15, cat:"Barbe",           options:false},
+    {id:"rasage",       nom:"Rasage à l'ancienne",       duree:30,  prix:25, cat:"Barbe",           options:false},
+    {id:"brushing",     nom:"Brushing",                  duree:30,  prix:25, cat:"Soins & couleur", options:true},
+    {id:"couleur",      nom:"Coloration",                duree:90,  prix:55, cat:"Soins & couleur", options:true},
+    {id:"meches",       nom:"Mèches / balayage",         duree:120, prix:75, cat:"Soins & couleur", options:true}
+  ],
+  options: [
+    {id:"long",      nom:"Cheveux longs ou épais", duree:15},
+    {id:"shampoing", nom:"Shampoing",              duree:10},
+    {id:"motif",     nom:"Motif au rasoir",        duree:10}
+  ]
+};
+
+/* ===================== Outils ===================== */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = n => String(n).padStart(2,"0");
+const toMin = s => { const [h,m] = s.split(":").map(Number); return h*60+m; };
+const startOfDay = d => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
+const addDays = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const at = (day,min) => { const x = startOfDay(day); x.setMinutes(min); return x; };
+const addMin = (d,m) => new Date(new Date(d).getTime() + m*60000);
+const hm = d => { d = new Date(d); return pad(d.getHours())+":"+pad(d.getMinutes()); };
+const ymd = d => { d = new Date(d); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); };
+const fromYmd = s => { const [y,m,dd] = s.split("-").map(Number); return new Date(y,m-1,dd); };
+const minOfDay = d => { d = new Date(d); return d.getHours()*60+d.getMinutes(); };
+const sameDay = (a,b) => ymd(a) === ymd(b);
+const fmtDay = d => new Date(d).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+const fmtShort = d => new Date(d).toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"});
+const fmtDur = m => m < 60 ? m+" min" : Math.floor(m/60)+" h"+(m%60 ? " "+pad(m%60) : "");
+const ranges = d => CONFIG.horaires[new Date(d).getDay()] || [];
+const isOpen = d => ranges(d).length > 0;
+const overlap = (a1,a2,b1,b2) => new Date(a1) < new Date(b2) && new Date(a2) > new Date(b1);
+const mondayOf = d => addDays(startOfDay(d), -((new Date(d).getDay()+6)%7));
+const CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+const genCode = () => Array.from({length:6}, () => CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)]).join("");
+const statutLbl = s => s === "confirme" ? "Confirmé" : "À valider";
+
+function normTel(v){
+  let t = String(v||"").replace(/[\s.\-()]/g,"");
+  if (/^\+33[1-9]\d{8}$/.test(t)) t = "0"+t.slice(3);
+  if (/^0[1-9]\d{8}$/.test(t) || /^\+\d{9,14}$/.test(t)) return t;
+  return null;
+}
+const fmtTel = t => /^0\d{9}$/.test(t) ? t.replace(/(\d{2})(?=\d)/g,"$1 ") : t;
+
+function estimate(prestaId, opts){
+  const p = CONFIG.prestations.find(x => x.id === prestaId);
+  if (!p) return null;
+  const detail = [[p.nom, p.duree]];
+  if (p.options) CONFIG.options.forEach(o => { if (opts.has(o.id)) detail.push([o.nom, o.duree]); });
+  return { duree: detail.reduce((s,[,m]) => s+m, 0), label: detail.map(d=>d[0]).join(" + "), detail, prix: p.prix, p };
+}
+
+/* Créneaux libres d'un jour pour une durée donnée. busy = [{id?,debut,fin}] */
+function freeSlots(day, duree, busy, excludeId=null, leadMin=CONFIG.delaiMin){
+  const out = [], limit = Date.now() + leadMin*60000;
+  for (const [a,b] of ranges(day)) {
+    for (let t = toMin(a); t + duree <= toMin(b); t += CONFIG.pas) {
+      const s = at(day,t), e = addMin(s,duree);
+      if (s.getTime() < limit) continue;
+      if (busy.some(x => x.id !== excludeId && overlap(s,e,x.debut,x.fin))) continue;
+      out.push(s);
+    }
+  }
+  return out;
+}
+
+function toast(msg){
+  const t = $("#toast"); t.textContent = msg; t.hidden = false;
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 3200);
+}
+async function copyText(text, btn){
+  try { await navigator.clipboard.writeText(text); toast("Copié"); }
+  catch(e){ const el = btn && btn.closest("[data-copy-wrap]")?.querySelector("textarea,input"); if (el){ el.focus(); el.select(); } toast("Sélectionné : copiez avec votre appareil"); }
+}
+
+/* ===================== Stockage : mode démo ===================== */
+const Demo = (() => {
+  const KEY = "salon-rdv-demo-v1";
+  let db = null, authed = false;
+  try { authed = sessionStorage.getItem(KEY+"-auth") === "1"; } catch(e){}
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(db)); } catch(e){} }
+  function load(){
+    if (db) return db;
+    try { const raw = localStorage.getItem(KEY); if (raw) db = JSON.parse(raw); } catch(e){}
+    if (!db || !Array.isArray(db.rdv)) { db = seed(); save(); }
+    return db;
+  }
+  function seed(){
+    const open = []; let d = startOfDay(new Date());
+    while (open.length < 4) { if (isOpen(d)) open.push(d); d = addDays(d,1); }
+    const rdv = [], blocs = [];
+    const mk = (i, time, pid, opts, prenom, tel, statut, note) => {
+      const e = estimate(pid, new Set(opts)); const debut = at(open[i], toMin(time));
+      if (debut < new Date()) return;
+      rdv.push({id:crypto.randomUUID(), prenom, tel, prestation:e.label, duree:e.duree, debut:debut.toISOString(), fin:addMin(debut,e.duree).toISOString(), statut, note:note||"", code:genCode(), created_at:new Date().toISOString()});
+    };
+    mk(0,"14:30","homme",[],"Karim","0612457890","confirme");
+    mk(0,"15:15","coupe-barbe",["shampoing"],"Thomas","0678120934","en_attente","Barbe courte, contours nets");
+    mk(0,"17:00","femme-courte",[],"Léa","0699887766","confirme");
+    mk(1,"09:00","degrade",["motif"],"Yanis","0745123698","confirme","Trait sur le côté gauche");
+    mk(1,"10:00","couleur",["long"],"Sophie","0623456781","en_attente");
+    mk(1,"15:00","enfant",[],"Noah","0611223344","confirme","Accompagné de sa maman");
+    mk(2,"11:00","barbe",[],"Mehdi","0788990011","confirme");
+    mk(2,"14:00","meches",[],"Camille","0655443322","en_attente");
+    const bd = at(open[3], toMin("16:00"));
+    blocs.push({id:crypto.randomUUID(), debut:bd.toISOString(), fin:addMin(bd,120).toISOString(), motif:"Livraison fournisseur"});
+    return {rdv, blocs};
+  }
+  const busyAll = () => [...load().rdv, ...load().blocs];
+  const taken = () => new Error("Ce créneau vient d'être pris. Choisissez-en un autre.");
+  return {
+    mode: "demo",
+    async occupied(de,a){ return busyAll().filter(x => overlap(x.debut,x.fin,de,a)).map(x => ({debut:x.debut, fin:x.fin})); },
+    async book(r){
+      const s = new Date(r.debut), e = addMin(s, r.duree);
+      if (s.getTime() < Date.now()) throw new Error("Ce créneau est déjà passé.");
+      if (busyAll().some(x => overlap(s,e,x.debut,x.fin))) throw taken();
+      const n = load().rdv.filter(x => x.tel === r.tel && new Date(x.debut) > new Date()).length;
+      if (n >= CONFIG.maxParTel) throw new Error(`Limite atteinte : ${CONFIG.maxParTel} rendez-vous à venir maximum par numéro.`);
+      const code = genCode();
+      load().rdv.push({id:crypto.randomUUID(), ...r, debut:s.toISOString(), fin:e.toISOString(), statut:"en_attente", code, created_at:new Date().toISOString()});
+      save(); return code;
+    },
+    async findMine(code,tel){ const r = load().rdv.find(x => x.code === code && x.tel === tel); return r ? {...r} : null; },
+    async cancelMine(code,tel){
+      const i = load().rdv.findIndex(x => x.code === code && x.tel === tel && new Date(x.debut) > new Date());
+      if (i < 0) return false; db.rdv.splice(i,1); save(); return true;
+    },
+    async isAuthed(){ return authed; },
+    async login(email,pw){ if (pw !== "demo") throw new Error("Mot de passe incorrect. En démo, c'est « demo »."); authed = true; try { sessionStorage.setItem(KEY+"-auth","1"); } catch(e){} },
+    async logout(){ authed = false; try { sessionStorage.removeItem(KEY+"-auth"); } catch(e){} },
+    async list(de,a){ return load().rdv.filter(x => overlap(x.debut,x.fin,de,a)).sort((x,y) => new Date(x.debut)-new Date(y.debut)).map(x => ({...x})); },
+    async blocs(de,a){ return load().blocs.filter(x => overlap(x.debut,x.fin,de,a)).map(x => ({...x})); },
+    async create(r){
+      if (busyAll().some(x => overlap(r.debut,r.fin,x.debut,x.fin))) throw taken();
+      load().rdv.push({id:crypto.randomUUID(), code:genCode(), created_at:new Date().toISOString(), ...r}); save();
+    },
+    async update(id,patch){
+      const r = load().rdv.find(x => x.id === id); if (!r) throw new Error("Rendez-vous introuvable.");
+      if (patch.debut && busyAll().some(x => x.id !== id && overlap(patch.debut,patch.fin,x.debut,x.fin))) throw taken();
+      Object.assign(r, patch); save();
+    },
+    async remove(id){ const d = load(); d.rdv = d.rdv.filter(x => x.id !== id); save(); },
+    async addBloc(b){ load().blocs.push({id:crypto.randomUUID(), ...b}); save(); },
+    async removeBloc(id){ const d = load(); d.blocs = d.blocs.filter(x => x.id !== id); save(); }
+  };
+})();
+
+/* ===================== Stockage : Supabase ===================== */
+function makeSupabase(sb){
+  const fail = e => {
+    const m = (e && e.message) || "";
+    if (e && e.code === "23P01" || /indisponible/i.test(m)) return new Error("Ce créneau vient d'être pris. Choisissez-en un autre.");
+    if (/Limite|passé|loin/i.test(m)) return new Error(m);
+    return new Error("Erreur de connexion au serveur. Réessayez dans un instant.");
+  };
+  const run = async q => { const {data,error} = await q; if (error) throw fail(error); return data; };
+  return {
+    mode: "live",
+    occupied: (de,a) => run(sb.rpc("creneaux_occupes",{de:de.toISOString(), a:a.toISOString()})),
+    book: r => run(sb.rpc("prendre_rdv",{p_prenom:r.prenom, p_tel:r.tel, p_prestation:r.prestation, p_duree:r.duree, p_debut:new Date(r.debut).toISOString(), p_note:r.note||null})),
+    findMine: async (code,tel) => { const d = await run(sb.rpc("mon_rdv",{p_code:code, p_tel:tel})); return d && d[0] || null; },
+    cancelMine: (code,tel) => run(sb.rpc("annuler_rdv",{p_code:code, p_tel:tel})),
+    isAuthed: async () => { const {data} = await sb.auth.getSession(); return !!(data && data.session); },
+    login: async (email,pw) => { const {error} = await sb.auth.signInWithPassword({email, password:pw}); if (error) throw new Error("Email ou mot de passe incorrect."); },
+    logout: () => sb.auth.signOut(),
+    list: (de,a) => run(sb.from("rdv").select("*").lt("debut",a.toISOString()).gt("fin",de.toISOString()).order("debut")),
+    blocs: (de,a) => run(sb.from("blocs").select("*").lt("debut",a.toISOString()).gt("fin",de.toISOString())),
+    create: r => run(sb.from("rdv").insert({...r, code:genCode()})),
+    update: (id,patch) => run(sb.from("rdv").update(patch).eq("id",id)),
+    remove: id => run(sb.from("rdv").delete().eq("id",id)),
+    addBloc: b => run(sb.from("blocs").insert(b)),
+    removeBloc: id => run(sb.from("blocs").delete().eq("id",id))
+  };
+}
+function loadScript(src){ return new Promise((ok,ko) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = ko; document.head.appendChild(s); }); }
+
+let api = Demo;
+async function initApi(){
+  if (CONFIG.supabaseUrl && CONFIG.supabaseKey) {
+    try {
+      await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js");
+      api = makeSupabase(window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey));
+      return;
+    } catch(e){ console.warn("Supabase indisponible, passage en mode démo", e); }
+  }
+  api = Demo;
+  $("#demo-note").hidden = false;
+  $("#l-hint").hidden = false;
+}
+
+/* ===================== Côté client : réservation ===================== */
+const B = { day:null, presta:null, opts:new Set(), slot:null, busy:[] };
+const est = () => B.presta ? estimate(B.presta, B.opts) : null;
+
+async function loadBusy(){
+  const t = startOfDay(new Date());
+  try { B.busy = await api.occupied(t, addDays(t, CONFIG.joursMax+1)); }
+  catch(e){ B.busy = []; toast(e.message); }
+}
+
+function renderInfo(){
+  document.title = CONFIG.salon;
+  $("#brand-name").textContent = CONFIG.salon;
+  $("#foot-name").textContent = CONFIG.salon + " · " + CONFIG.adresse;
+  $("#fact-adr").textContent = CONFIG.adresse;
+  $("#fact-tel").textContent = CONFIG.telephone;
+  const names = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+  $("#horaires").innerHTML = [1,2,3,4,5,6,0].map((d,i) => {
+    const r = CONFIG.horaires[d] || [];
+    return `<dt>${names[i]}</dt><dd class="mono ${r.length?"":"closed"}">${r.length ? r.map(([a,b]) => a.replace(":","h")+"–"+b.replace(":","h")).join(" · ") : "Fermé"}</dd>`;
+  }).join("");
+}
+
+function renderDays(){
+  const t = startOfDay(new Date()), e = est();
+  let html = "";
+  for (let i = 0; i < CONFIG.joursMax; i++) {
+    const d = addDays(t,i), open = isOpen(d);
+    let st = open ? "Ouvert" : "Fermé", full = !open, n = null;
+    if (open) {
+      n = freeSlots(d, e ? e.duree : CONFIG.pas, B.busy).length;
+      if (!n) { st = "Complet"; full = true; }
+      else if (e) st = n + (n > 1 ? " créneaux" : " créneau");
+    }
+    const sel = B.day && sameDay(B.day,d);
+    html += `<button type="button" class="day" data-d="${ymd(d)}" aria-pressed="${sel}" ${full && !sel ? "disabled" : ""}>
+      <span class="dw">${i===0 ? "Auj." : d.toLocaleDateString("fr-FR",{weekday:"short"}).replace(".","")}</span>
+      <b>${d.getDate()}</b><span class="mo">${d.toLocaleDateString("fr-FR",{month:"short"})}</span>
+      <span class="st ${full ? "full" : ""}">${st}</span></button>`;
+  }
+  $("#days").innerHTML = html;
+  $("#s1-sel").textContent = B.day ? fmtDay(B.day) : "";
+}
+
+function renderPrestas(){
+  const cats = [...new Set(CONFIG.prestations.map(p => p.cat))];
+  $("#prestas").innerHTML = cats.map(c => `<div class="cat">${esc(c)}</div><div class="prestas">` +
+    CONFIG.prestations.filter(p => p.cat === c).map(p => `
+      <label class="presta"><input type="radio" name="presta" value="${p.id}" ${B.presta===p.id?"checked":""}>
+        <span class="nm">${esc(p.nom)}</span>
+        <span class="meta"><span class="mono">${fmtDur(p.duree)}</span><br>dès ${p.prix} €</span>
+      </label>`).join("") + `</div>`).join("");
+  renderOpts();
+}
+
+function renderOpts(){
+  const p = B.presta && CONFIG.prestations.find(x => x.id === B.presta);
+  const allow = p && p.options;
+  $("#opts").innerHTML = CONFIG.options.map(o => `
+    <label class="opt"><input type="checkbox" value="${o.id}" ${B.opts.has(o.id)&&allow?"checked":""} ${allow?"":"disabled"}>
+      ${esc(o.nom)} <span class="mono muted">+${o.duree}</span></label>`).join("");
+  const e = est(), box = $("#estim");
+  if (!e) { box.hidden = true; $("#s2-sel").textContent = ""; return; }
+  box.hidden = false;
+  const max = 180, pct = Math.min(100, e.duree/max*100);
+  box.innerHTML = `
+    <div class="row"><span class="big mono">${fmtDur(e.duree)}</span><span>temps estimé au fauteuil</span></div>
+    <div class="ruler" aria-hidden="true"><div class="fill" style="width:${pct}%"></div><div class="ticks"></div></div>
+    <div class="ruler-legend"><span>0</span><span>1 h</span><span>2 h</span><span>3 h</span></div>
+    <div class="detail">${e.detail.map(([n,m]) => `${esc(n)} <span class="mono">${m} min</span>`).join(" + ")} · prix indicatif dès ${e.prix} €, réglé au salon</div>`;
+  $("#s2-sel").textContent = e.label;
+}
+
+function nextAvailable(duree){
+  const t = startOfDay(new Date());
+  for (let i = 0; i < CONFIG.joursMax; i++) {
+    const d = addDays(t,i), s = freeSlots(d, duree, B.busy);
+    if (s.length) return s[0];
+  }
+  return null;
+}
+
+function renderSlots(){
+  const e = est(), box = $("#slots");
+  $("#s3-sel").textContent = B.slot ? hm(B.slot)+" – "+hm(addMin(B.slot,e.duree)) : "";
+  if (!B.day || !e) { box.innerHTML = `<div class="empty">Choisissez d'abord un jour et une prestation.</div>`; return; }
+  const list = freeSlots(B.day, e.duree, B.busy);
+  if (!list.length) {
+    const nx = nextAvailable(e.duree);
+    box.innerHTML = `<div class="empty">Plus de place pour ${fmtDur(e.duree)} ce jour-là.${nx ? `<br>Prochain créneau libre : <b>${fmtDay(nx)} à ${hm(nx)}</b>.<br><button type="button" class="btn sm" id="go-next" data-t="${nx.toISOString()}">Choisir ce créneau</button>` : ""}</div>`;
+    return;
+  }
+  const am = list.filter(s => s.getHours() < 13), pm = list.filter(s => s.getHours() >= 13);
+  const grp = (t,arr) => arr.length ? `<div class="slot-group"><h3>${t}</h3><div class="slots">${arr.map(s =>
+    `<button type="button" class="slot" data-t="${s.toISOString()}" aria-pressed="${B.slot && +B.slot === +s}">${hm(s)}</button>`).join("")}</div></div>` : "";
+  box.innerHTML = grp("Matin",am) + grp("Après-midi",pm) + `<p class="muted" style="margin:4px 0 0;font-size:13px">L'heure affichée est le début ; fin prévue ${fmtDur(e.duree)} plus tard.</p>`;
+}
+
+function renderLocks(){
+  $("#s2").classList.toggle("locked", !B.day);
+  $("#s3").classList.toggle("locked", !(B.day && B.presta));
+  $("#s4").classList.toggle("locked", !B.slot);
+  const e = est();
+  $("#recap").innerHTML = B.slot && e ? `<b>${esc(e.label)}</b><br>${fmtDay(B.slot)}, ${hm(B.slot)} – ${hm(addMin(B.slot,e.duree))} <span class="muted">(${fmtDur(e.duree)})</span>` : "";
+}
+function renderBooking(){ renderDays(); renderOpts(); renderSlots(); renderLocks(); }
+
+function bindBooking(){
+  $("#days").addEventListener("click", ev => {
+    const b = ev.target.closest(".day"); if (!b || b.disabled) return;
+    B.day = fromYmd(b.dataset.d); B.slot = null; renderBooking();
+    if (!B.presta) $("#s2").scrollIntoView({behavior:"smooth", block:"start"});
+  });
+  $("#prestas").addEventListener("change", ev => {
+    if (ev.target.name !== "presta") return;
+    B.presta = ev.target.value; B.slot = null;
+    const p = CONFIG.prestations.find(x => x.id === B.presta); if (!p.options) B.opts.clear();
+    renderBooking();
+  });
+  $("#opts").addEventListener("change", ev => {
+    const c = ev.target; if (c.type !== "checkbox") return;
+    c.checked ? B.opts.add(c.value) : B.opts.delete(c.value);
+    B.slot = null; renderBooking();
+  });
+  $("#slots").addEventListener("click", ev => {
+    const s = ev.target.closest(".slot, #go-next"); if (!s) return;
+    B.slot = new Date(s.dataset.t);
+    if (s.id === "go-next") B.day = startOfDay(B.slot);
+    renderBooking();
+    $("#s4").scrollIntoView({behavior:"smooth", block:"start"});
+  });
+  $("#book-form").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const err = $("#b-err"); err.textContent = "";
+    const prenom = $("#b-prenom").value.trim(), tel = normTel($("#b-tel").value), note = $("#b-note").value.trim();
+    const e = est();
+    if (!B.slot || !e) { err.textContent = "Choisissez un créneau."; return; }
+    if (!prenom) { err.textContent = "Indiquez votre prénom."; $("#b-prenom").focus(); return; }
+    if (!tel) { err.textContent = "Numéro invalide. Exemple : 06 12 34 56 78."; $("#b-tel").focus(); return; }
+    const btn = $("#b-submit"); btn.disabled = true; btn.textContent = "Envoi…";
+    try {
+      const code = await api.book({prenom, tel, prestation:e.label, duree:e.duree, debut:B.slot.toISOString(), note});
+      showDone(code, prenom, tel, e, B.slot);
+    } catch(x) {
+      err.textContent = x.message;
+      if (/pris/.test(x.message)) { await loadBusy(); B.slot = null; renderBooking(); }
+    } finally { btn.disabled = false; btn.textContent = "Envoyer ma demande"; }
+  });
+}
+
+function showDone(code, prenom, tel, e, slot){
+  $("#steps").hidden = true;
+  const d = $("#done"); d.hidden = false;
+  d.innerHTML = `<div class="step confirm">
+    <h2>Merci ${esc(prenom)}, votre demande est envoyée.</h2>
+    <p style="margin:0">Le coiffeur va la valider. Gardez ce code pour retrouver ou annuler votre rendez-vous :</p>
+    <div data-copy-wrap><span class="code">${code}</span> <button type="button" class="btn sm" id="cp-code">Copier le code</button><input type="text" value="${code}" hidden></div>
+    <dl class="dl">
+      <dt>Prestation</dt><dd>${esc(e.label)}</dd>
+      <dt>Date</dt><dd>${fmtDay(slot)}</dd>
+      <dt>Heure</dt><dd class="mono">${hm(slot)} – ${hm(addMin(slot,e.duree))}</dd>
+      <dt>Téléphone</dt><dd class="mono">${esc(fmtTel(tel))}</dd>
+      <dt>Paiement</dt><dd>Au salon, après la prestation</dd>
+    </dl>
+    <div class="row-btns"><button type="button" class="btn primary" id="again">Prendre un autre rendez-vous</button><a class="btn" href="#mon-rdv">Voir mon rendez-vous</a></div>
+  </div>`;
+  $("#cp-code").onclick = ev => copyText(code, ev.currentTarget);
+  $("#again").onclick = async () => {
+    Object.assign(B, {day:null, presta:null, slot:null}); B.opts.clear();
+    $("#book-form").reset(); d.hidden = true; $("#steps").hidden = false;
+    await loadBusy(); renderPrestas(); renderBooking(); scrollTo({top:0, behavior:"smooth"});
+  };
+  $("#m-code").value = code; $("#m-tel").value = tel;
+  d.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+/* ===================== Côté client : mon rendez-vous ===================== */
+function bindMine(){
+  $("#mine-form").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const err = $("#m-err"), out = $("#mine-result"); err.textContent = ""; out.innerHTML = "";
+    const code = $("#m-code").value.trim().toUpperCase(), tel = normTel($("#m-tel").value);
+    if (code.length !== 6) { err.textContent = "Le code contient 6 caractères."; return; }
+    if (!tel) { err.textContent = "Numéro de téléphone invalide."; return; }
+    let r;
+    try { r = await api.findMine(code, tel); } catch(x) { err.textContent = x.message; return; }
+    if (!r) { err.textContent = "Aucun rendez-vous ne correspond à ce code et ce numéro."; return; }
+    const futur = new Date(r.debut) > new Date();
+    out.innerHTML = `<hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+      <h2 style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">${esc(r.prenom)} <span class="pill ${r.statut}">${statutLbl(r.statut)}</span></h2>
+      <dl class="dl"><dt>Prestation</dt><dd>${esc(r.prestation)}</dd><dt>Date</dt><dd>${fmtDay(r.debut)}</dd>
+      <dt>Heure</dt><dd class="mono">${hm(r.debut)} – ${hm(addMin(r.debut,r.duree))}</dd><dt>Paiement</dt><dd>Au salon</dd></dl>
+      ${r.statut === "en_attente" ? `<p class="muted" style="font-size:13.5px">Le coiffeur n'a pas encore validé. Le créneau vous est réservé en attendant.</p>` : ""}
+      ${futur ? `<div id="cancel-zone"><button type="button" class="btn danger" id="cancel-ask">Annuler mon rendez-vous</button></div>` : `<p class="muted">Ce rendez-vous est passé.</p>`}`;
+    const ask = $("#cancel-ask");
+    if (ask) ask.onclick = () => {
+      $("#cancel-zone").innerHTML = `<div class="confirm-box"><b>Annuler le rendez-vous du ${fmtShort(r.debut)} à ${hm(r.debut)} ?</b>
+        <div class="row-btns"><button type="button" class="btn danger" id="cancel-yes">Oui, annuler</button><button type="button" class="btn" id="cancel-no">Garder</button></div></div>`;
+      $("#cancel-no").onclick = () => $("#mine-form").requestSubmit();
+      $("#cancel-yes").onclick = async () => {
+        try { const ok = await api.cancelMine(code, tel); out.innerHTML = ok ? `<p style="margin-top:16px"><b>Rendez-vous annulé.</b> Le créneau est libéré.</p>` : `<p class="err" style="margin-top:16px">Annulation impossible (rendez-vous passé ou introuvable).</p>`; await loadBusy(); renderBooking(); }
+        catch(x) { toast(x.message); }
+      };
+    };
+  });
+}
+
+/* ===================== Espace coiffeur ===================== */
+const P = { anchor:startOfDay(new Date()), mode: innerWidth < 760 ? "jour" : "semaine", rdv:[], blocs:[], pending:[], timer:null };
+const PPM = 1.3; // pixels par minute dans l'agenda
+const span = (() => {
+  let a = 24*60, b = 0;
+  Object.values(CONFIG.horaires).forEach(r => r.forEach(([x,y]) => { a = Math.min(a,toMin(x)); b = Math.max(b,toMin(y)); }));
+  return { start: Math.floor(a/60)*60, end: Math.ceil(b/60)*60 };
+})();
+
+function proDays(){
+  if (P.mode === "jour") return [P.anchor];
+  const m = mondayOf(P.anchor), all = [0,1,2,3,4,5,6].map(i => addDays(m,i)), open = all.filter(isOpen);
+  return open.length ? open : all;
+}
+function proRange(){
+  if (P.mode === "jour") return [P.anchor, addDays(P.anchor,1)];
+  const m = mondayOf(P.anchor); return [m, addDays(m,7)];
+}
+
+async function proEnter(){
+  const ok = await api.isAuthed();
+  $("#pro-login").hidden = ok; $("#pro-app").hidden = !ok;
+  clearInterval(P.timer);
+  if (ok) { await proLoad(); P.timer = setInterval(() => { if (!$("#v-pro").hidden && $("#modal").hidden) proLoad(); }, 60000); }
+}
+
+async function proLoad(){
+  const [de,a] = proRange(), now = new Date();
+  try {
+    const [rdv, blocs, futur] = await Promise.all([api.list(de,a), api.blocs(de,a), api.list(now, addDays(now,90))]);
+    P.rdv = rdv; P.blocs = blocs; P.pending = futur.filter(r => r.statut === "en_attente");
+    const t0 = startOfDay(now);
+    P.today = futur.concat(rdv).filter((r,i,arr) => arr.findIndex(x => x.id === r.id) === i && sameDay(r.debut,t0));
+  } catch(x) { toast(x.message); }
+  proRender();
+}
+
+function proRender(){
+  // Stats
+  const today = P.today || [], mins = today.reduce((s,r) => s + r.duree, 0);
+  const left = today.filter(r => new Date(r.fin) > new Date());
+  const next = left.sort((a,b) => new Date(a.debut)-new Date(b.debut))[0];
+  $("#stats").innerHTML = `
+    <div class="stat"><div class="k">Aujourd'hui</div><div class="v">${today.length} rdv</div></div>
+    <div class="stat"><div class="k">Temps occupé</div><div class="v mono">${fmtDur(mins)}</div></div>
+    <div class="stat ${P.pending.length ? "warn" : ""}"><div class="k">À valider</div><div class="v">${P.pending.length}</div></div>
+    <div class="stat"><div class="k">Prochain client</div><div class="v" style="font-size:18px">${next ? esc(next.prenom)+` <span class="mono">${hm(next.debut)}</span>` : "—"}</div></div>`;
+
+  // Demandes en attente
+  const pd = $("#pending");
+  pd.hidden = !P.pending.length;
+  pd.innerHTML = `<h2>Demandes à valider</h2><div class="pend-list">` + P.pending.slice(0,8).map(r => `
+    <div class="pend"><div class="who"><b>${esc(r.prenom)} · <span class="mono">${fmtShort(r.debut)} ${hm(r.debut)}</span></b><span>${esc(r.prestation)} · ${fmtDur(r.duree)}</span></div>
+    <div class="row-btns"><button class="btn primary sm" data-accept="${r.id}">Accepter</button><button class="btn sm" data-open="${r.id}">Détails</button></div></div>`).join("") + `</div>`;
+
+  // Barre
+  $$(".seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === P.mode));
+  const days = proDays();
+  $("#range-lbl").textContent = P.mode === "jour" ? fmtDay(P.anchor) :
+    "Semaine du " + mondayOf(P.anchor).toLocaleDateString("fr-FR",{day:"numeric",month:"long"});
+
+  // Grille
+  const H = (span.end - span.start) * PPM, hour = 60*PPM;
+  const ag = $("#agenda");
+  ag.style.setProperty("--cols", days.length);
+  ag.style.setProperty("--colmin", P.mode === "jour" ? "220px" : "128px");
+  let head = `<div class="ag-h corner"></div>` + days.map(d => {
+    const n = P.rdv.filter(r => sameDay(r.debut,d)).length;
+    return `<div class="ag-h ${sameDay(d,new Date())?"today":""}"><b>${d.toLocaleDateString("fr-FR",{weekday:"long"})} ${d.getDate()}</b><span class="muted">${isOpen(d) ? n+" rdv" : "Fermé"}</span></div>`;
+  }).join("");
+  let times = `<div class="ag-times" style="height:${H}px">`;
+  for (let m = span.start; m <= span.end; m += 60) times += `<span style="top:${(m-span.start)*PPM}px">${pad(m/60)}h</span>`;
+  times += `</div>`;
+  const cols = days.map(d => {
+    // zones fermées
+    const r = ranges(d).map(([a,b]) => [toMin(a),toMin(b)]); let closed = "", cur = span.start;
+    r.forEach(([a,b]) => { if (a > cur) closed += `<div class="ag-closed" style="top:${(cur-span.start)*PPM}px;height:${(a-cur)*PPM}px"></div>`; cur = Math.max(cur,b); });
+    if (cur < span.end) closed += `<div class="ag-closed" style="top:${(cur-span.start)*PPM}px;height:${(span.end-cur)*PPM}px"></div>`;
+    const pos = (s,e) => { const a = Math.max(minOfDay(s),span.start), b = Math.min(sameDay(s,e) ? minOfDay(e) : span.end, span.end); return `top:${(a-span.start)*PPM}px;height:${Math.max(18,(b-a)*PPM-2)}px`; };
+    const evs = P.rdv.filter(x => sameDay(x.debut,d)).map(x => `
+      <button type="button" class="ev ${x.statut}" data-open="${x.id}" style="${pos(x.debut,x.fin)}">
+        <span class="t">${hm(x.debut)}–${hm(x.fin)}</span><b>${esc(x.prenom)}</b><span class="p">${esc(x.prestation)}</span></button>`).join("");
+    const bl = P.blocs.filter(x => overlap(x.debut,x.fin,startOfDay(d),addDays(d,1))).map(x => {
+      const s = new Date(Math.max(new Date(x.debut), startOfDay(d))), e = new Date(Math.min(new Date(x.fin), addDays(d,1)));
+      return `<button type="button" class="ev bloc" data-bloc="${x.id}" style="${pos(s,e)}"><span class="t">${hm(s)}–${hm(e)}</span><b>${esc(x.motif||"Indisponible")}</b></button>`;
+    }).join("");
+    let now = "";
+    if (sameDay(d,new Date())) { const m = minOfDay(new Date()); if (m >= span.start && m <= span.end) now = `<div class="now" style="top:${(m-span.start)*PPM}px"></div>`; }
+    return `<div class="ag-col" data-day="${ymd(d)}" style="height:${H}px;--hour:${hour}px">${closed}${bl}${evs}${now}</div>`;
+  }).join("");
+  ag.innerHTML = head + times + cols;
+}
+
+function findRdv(id){ return P.rdv.find(r => r.id === id) || P.pending.find(r => r.id === id) || (P.today||[]).find(r => r.id === id); }
+
+/* ---- fenêtre ---- */
+function openSheet(html){ $("#sheet").innerHTML = `<button type="button" class="x" aria-label="Fermer" data-close>×</button>` + html; $("#modal").hidden = false; }
+function closeSheet(){ $("#modal").hidden = true; $("#sheet").innerHTML = ""; }
+
+function smsText(r, kind){
+  const when = `${fmtDay(r.debut)} à ${hm(r.debut)}`;
+  if (kind === "decale") return `Bonjour ${r.prenom}, votre rendez-vous chez ${CONFIG.salon} est déplacé au ${when}. Répondez à ce message si l'horaire ne vous convient pas. À bientôt !`;
+  if (kind === "confirme") return `Bonjour ${r.prenom}, votre rendez-vous chez ${CONFIG.salon} est confirmé le ${when} (${r.prestation}). Paiement au salon. À bientôt !`;
+  return `Bonjour ${r.prenom}, petit rappel : rendez-vous chez ${CONFIG.salon} le ${when}. À bientôt !`;
+}
+function smsBlock(r, kind){
+  const t = smsText(r, kind);
+  return `<div class="sms" data-copy-wrap><b style="font-size:13.5px">Message pour ${esc(r.prenom)} · <span class="mono">${esc(fmtTel(r.tel))}</span></b>
+    <textarea readonly rows="3">${esc(t)}</textarea>
+    <div class="row-btns"><a class="btn sm primary" href="sms:${encodeURIComponent(r.tel)}?body=${encodeURIComponent(t)}">Ouvrir dans Messages</a><button type="button" class="btn sm" data-copy>Copier le texte</button></div></div>`;
+}
+
+function openRdv(id){
+  const r = findRdv(id); if (!r) return;
+  openSheet(`
+    <h2>${esc(r.prenom)} <span class="pill ${r.statut}">${statutLbl(r.statut)}</span></h2>
+    <dl class="dl">
+      <dt>Date</dt><dd>${fmtDay(r.debut)}</dd>
+      <dt>Heure</dt><dd class="mono">${hm(r.debut)} – ${hm(r.fin)} (${fmtDur(r.duree)})</dd>
+      <dt>Prestation</dt><dd>${esc(r.prestation)}</dd>
+      <dt>Téléphone</dt><dd><span class="mono">${esc(fmtTel(r.tel))}</span> · <a href="tel:${encodeURIComponent(r.tel)}">Appeler</a></dd>
+      ${r.note ? `<dt>Note</dt><dd>${esc(r.note)}</dd>` : ""}
+      <dt>Code client</dt><dd class="mono">${esc(r.code)}</dd>
+    </dl>
+    <div id="act" class="row-btns">
+      ${r.statut === "en_attente" ? `<button type="button" class="btn primary" data-accept="${r.id}">Accepter</button>` : ""}
+      <button type="button" class="btn" id="a-move">Décaler</button>
+      <button type="button" class="btn" id="a-sms">Envoyer un rappel</button>
+      <button type="button" class="btn danger" id="a-del">Supprimer</button>
+    </div>
+    <div id="act-zone" style="margin-top:14px"></div>`);
+  $("#a-sms").onclick = () => $("#act-zone").innerHTML = smsBlock(r, "rappel");
+  $("#a-del").onclick = () => {
+    $("#act-zone").innerHTML = `<div class="confirm-box"><b>Supprimer le rendez-vous de ${esc(r.prenom)} (${fmtShort(r.debut)} ${hm(r.debut)}) ?</b><span style="font-size:13.5px">Le créneau sera libéré. Cette action est définitive.</span>
+      <div class="row-btns"><button type="button" class="btn danger" id="del-yes">Oui, supprimer</button><button type="button" class="btn" id="del-no">Garder</button></div></div>`;
+    $("#del-no").onclick = () => $("#act-zone").innerHTML = "";
+    $("#del-yes").onclick = async () => {
+      try { await api.remove(r.id); closeSheet(); toast("Rendez-vous supprimé"); await proLoad(); await loadBusy(); renderBooking(); } catch(x) { toast(x.message); }
+    };
+  };
+  $("#a-move").onclick = () => {
+    const z = $("#act-zone");
+    z.innerHTML = `<div class="form" style="border:1px solid var(--line);border-radius:12px;padding:12px">
+      <b>Nouvel horaire pour ${fmtDur(r.duree)}</b>
+      <div class="grid2"><label class="f" for="mv-date">Jour<input type="date" id="mv-date" value="${ymd(r.debut)}" min="${ymd(new Date())}"></label>
+      <label class="f" for="mv-time">Heure<select id="mv-time"></select></label></div>
+      <p class="err" id="mv-err"></p>
+      <div class="row-btns"><button type="button" class="btn primary" id="mv-save">Enregistrer</button></div></div>`;
+    const fill = () => fillTimes($("#mv-date").value, r.duree, $("#mv-time"), r.id);
+    $("#mv-date").onchange = fill; fill();
+    $("#mv-save").onclick = async () => {
+      const v = $("#mv-time").value; if (!v) { $("#mv-err").textContent = "Aucun créneau libre ce jour-là."; return; }
+      const debut = new Date(v), fin = addMin(debut, r.duree);
+      try {
+        await api.update(r.id, {debut:debut.toISOString(), fin:fin.toISOString()});
+        toast("Rendez-vous décalé"); await proLoad(); await loadBusy(); renderBooking();
+        z.innerHTML = `<p style="margin:0 0 8px"><b>Décalé au ${fmtDay(debut)} à ${hm(debut)}.</b> Prévenez le client :</p>` + smsBlock({...r, debut:debut.toISOString()}, "decale");
+        $("#act").hidden = true;
+      } catch(x) { $("#mv-err").textContent = x.message; }
+    };
+  };
+}
+
+async function fillTimes(dateStr, duree, sel, excludeId, prefer){
+  sel.innerHTML = `<option value="">Chargement…</option>`;
+  const d = fromYmd(dateStr);
+  let busy = [];
+  try { const [r,b] = await Promise.all([api.list(d,addDays(d,1)), api.blocs(d,addDays(d,1))]); busy = [...r,...b]; } catch(x) { toast(x.message); }
+  const list = freeSlots(d, duree, busy, excludeId, 0);
+  sel.innerHTML = list.length ? list.map(s => `<option value="${s.toISOString()}">${hm(s)} – ${hm(addMin(s,duree))}</option>`).join("") : `<option value="">Complet / fermé</option>`;
+  if (prefer != null) { const best = list.find(s => minOfDay(s) >= prefer); if (best) sel.value = best.toISOString(); }
+}
+
+async function accept(id){
+  const r = findRdv(id);
+  try {
+    await api.update(id, {statut:"confirme"});
+    await proLoad();
+    if (r) openSheet(`<h2>Rendez-vous confirmé</h2><p class="muted" style="margin:0 0 12px">${esc(r.prenom)} · ${fmtDay(r.debut)} à ${hm(r.debut)}</p>` + smsBlock(r,"confirme"));
+    else toast("Rendez-vous confirmé");
+  } catch(x) { toast(x.message); }
+}
+
+function openAddRdv(dayStr, prefMin){
+  const day = dayStr || ymd(isOpen(P.anchor) ? P.anchor : new Date());
+  openSheet(`<h2>Nouveau rendez-vous</h2><p class="muted" style="margin:0 0 12px">Pour un client qui appelle ou passe au salon. Il est confirmé directement.</p>
+    <form class="form" id="add-form" novalidate>
+      <div class="grid2">
+        <label class="f" for="a-prenom">Prénom<input type="text" id="a-prenom" maxlength="40"></label>
+        <label class="f" for="a-tel">Téléphone<input type="tel" id="a-tel" inputmode="tel"></label>
+      </div>
+      <label class="f" for="a-presta">Prestation<select id="a-presta">${CONFIG.prestations.map(p => `<option value="${p.id}">${esc(p.nom)} · ${fmtDur(p.duree)}</option>`).join("")}</select></label>
+      <div class="opts" id="a-opts" style="margin:0"></div>
+      <div class="estim" id="a-est" style="margin:0"></div>
+      <div class="grid2">
+        <label class="f" for="a-date">Jour<input type="date" id="a-date" value="${day}"></label>
+        <label class="f" for="a-time">Heure<select id="a-time"></select></label>
+      </div>
+      <label class="f" for="a-note">Note<input type="text" id="a-note" maxlength="200"></label>
+      <p class="err" id="a-err"></p>
+      <div class="row-btns"><button class="btn primary" type="submit">Ajouter à l'agenda</button></div>
+    </form>`);
+  const opts = new Set();
+  const refresh = () => {
+    const p = CONFIG.prestations.find(x => x.id === $("#a-presta").value);
+    if (!p.options) opts.clear();
+    $("#a-opts").innerHTML = CONFIG.options.map(o => `<label class="opt"><input type="checkbox" value="${o.id}" ${opts.has(o.id)?"checked":""} ${p.options?"":"disabled"}>${esc(o.nom)} <span class="mono muted">+${o.duree}</span></label>`).join("");
+    const e = estimate(p.id, opts);
+    $("#a-est").innerHTML = `<div class="row"><span class="big mono" style="font-size:22px">${fmtDur(e.duree)}</span><span class="detail">${esc(e.label)}</span></div>`;
+    fillTimes($("#a-date").value, e.duree, $("#a-time"), null, prefMin);
+  };
+  $("#a-presta").onchange = refresh; $("#a-date").onchange = refresh;
+  $("#a-opts").onchange = ev => { ev.target.checked ? opts.add(ev.target.value) : opts.delete(ev.target.value); refresh(); };
+  refresh();
+  $("#add-form").onsubmit = async ev => {
+    ev.preventDefault();
+    const err = $("#a-err"); err.textContent = "";
+    const prenom = $("#a-prenom").value.trim(), tel = normTel($("#a-tel").value), v = $("#a-time").value;
+    const e = estimate($("#a-presta").value, opts);
+    if (!prenom) { err.textContent = "Indiquez le prénom."; return; }
+    if (!tel) { err.textContent = "Numéro de téléphone invalide."; return; }
+    if (!v) { err.textContent = "Aucun créneau libre ce jour-là."; return; }
+    const debut = new Date(v);
+    try {
+      await api.create({prenom, tel, prestation:e.label, duree:e.duree, debut:debut.toISOString(), fin:addMin(debut,e.duree).toISOString(), note:$("#a-note").value.trim(), statut:"confirme"});
+      closeSheet(); toast("Rendez-vous ajouté"); await proLoad(); await loadBusy(); renderBooking();
+    } catch(x) { err.textContent = x.message; }
+  };
+}
+
+function openAddBloc(){
+  const opts = []; for (let m = span.start; m <= span.end; m += 15) opts.push(`<option value="${m}">${pad(Math.floor(m/60))}:${pad(m%60)}</option>`);
+  openSheet(`<h2>Bloquer un créneau</h2><p class="muted" style="margin:0 0 12px">Pause, congé, formation… Les clients ne pourront pas réserver sur cette plage.</p>
+    <form class="form" id="bloc-form" novalidate>
+      <label class="f" for="k-date">Jour<input type="date" id="k-date" value="${ymd(P.anchor)}" min="${ymd(new Date())}"></label>
+      <label class="opt" style="width:max-content"><input type="checkbox" id="k-all"> Journée entière</label>
+      <div class="grid2" id="k-hours">
+        <label class="f" for="k-de">De<select id="k-de">${opts.join("")}</select></label>
+        <label class="f" for="k-a">À<select id="k-a">${opts.join("")}</select></label>
+      </div>
+      <label class="f" for="k-motif">Motif<input type="text" id="k-motif" maxlength="60" placeholder="Pause déjeuner, congé…"></label>
+      <p class="err" id="k-err"></p>
+      <div class="row-btns"><button class="btn primary" type="submit">Bloquer</button></div>
+    </form>`);
+  $("#k-de").value = String(span.start + 180); $("#k-a").value = String(span.start + 240);
+  $("#k-all").onchange = ev => $("#k-hours").hidden = ev.target.checked;
+  $("#bloc-form").onsubmit = async ev => {
+    ev.preventDefault();
+    const d = fromYmd($("#k-date").value), all = $("#k-all").checked;
+    const a = all ? 0 : +$("#k-de").value, b = all ? 24*60 : +$("#k-a").value;
+    if (b <= a) { $("#k-err").textContent = "L'heure de fin doit être après l'heure de début."; return; }
+    const debut = at(d,a), fin = at(d,b);
+    const clash = (await api.list(debut,fin).catch(() => [])).length;
+    try {
+      await api.addBloc({debut:debut.toISOString(), fin:fin.toISOString(), motif:$("#k-motif").value.trim() || (all ? "Fermé" : "Indisponible")});
+      closeSheet(); toast(clash ? `Créneau bloqué. Attention : ${clash} rendez-vous déjà sur cette plage.` : "Créneau bloqué");
+      await proLoad(); await loadBusy(); renderBooking();
+    } catch(x) { $("#k-err").textContent = x.message; }
+  };
+}
+
+function openBloc(id){
+  const b = P.blocs.find(x => x.id === id); if (!b) return;
+  openSheet(`<h2>${esc(b.motif || "Indisponible")} <span class="pill bloc">Bloqué</span></h2>
+    <dl class="dl"><dt>Du</dt><dd>${fmtShort(b.debut)} <span class="mono">${hm(b.debut)}</span></dd><dt>Au</dt><dd>${fmtShort(b.fin)} <span class="mono">${hm(b.fin)}</span></dd></dl>
+    <div class="row-btns"><button type="button" class="btn danger" id="b-del">Débloquer ce créneau</button></div>`);
+  $("#b-del").onclick = async () => { try { await api.removeBloc(id); closeSheet(); toast("Créneau débloqué"); await proLoad(); await loadBusy(); renderBooking(); } catch(x) { toast(x.message); } };
+}
+
+function bindPro(){
+  $("#login-form").addEventListener("submit", async ev => {
+    ev.preventDefault(); $("#l-err").textContent = "";
+    try { await api.login($("#l-email").value.trim(), $("#l-pw").value); $("#l-pw").value = ""; await proEnter(); }
+    catch(x) { $("#l-err").textContent = x.message; }
+  });
+  $("#logout").onclick = async () => { await api.logout(); clearInterval(P.timer); proEnter(); };
+  $("#prev").onclick = () => { P.anchor = addDays(P.anchor, P.mode === "jour" ? -1 : -7); proLoad(); };
+  $("#next").onclick = () => { P.anchor = addDays(P.anchor, P.mode === "jour" ? 1 : 7); proLoad(); };
+  $("#today").onclick = () => { P.anchor = startOfDay(new Date()); proLoad(); };
+  $$(".seg button").forEach(b => b.onclick = () => { P.mode = b.dataset.mode; proLoad(); });
+  $("#add-rdv").onclick = () => openAddRdv();
+  $("#add-bloc").onclick = openAddBloc;
+  $("#v-pro").addEventListener("click", ev => {
+    const acc = ev.target.closest("[data-accept]"); if (acc) { accept(acc.dataset.accept); return; }
+    const op = ev.target.closest("[data-open]"); if (op) { openRdv(op.dataset.open); return; }
+    const bl = ev.target.closest("[data-bloc]"); if (bl) { openBloc(bl.dataset.bloc); return; }
+    const col = ev.target.closest(".ag-col");
+    if (col && ev.target === col) {
+      const y = ev.clientY - col.getBoundingClientRect().top;
+      const m = span.start + Math.floor(y / PPM / 15) * 15;
+      openAddRdv(col.dataset.day, m);
+    }
+  });
+  $("#modal").addEventListener("click", ev => {
+    if (ev.target.id === "modal" || ev.target.closest("[data-close]")) { closeSheet(); return; }
+    const acc = ev.target.closest("[data-accept]"); if (acc) { accept(acc.dataset.accept); return; }
+    const cp = ev.target.closest("[data-copy]"); if (cp) copyText(cp.closest("[data-copy-wrap]").querySelector("textarea").value, cp);
+  });
+  document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !$("#modal").hidden) closeSheet(); });
+}
+
+/* ===================== Navigation ===================== */
+function route(){
+  const v = ["reserver","mon-rdv","pro"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "reserver";
+  ["reserver","mon-rdv","pro"].forEach(x => $("#v-"+x).hidden = x !== v);
+  $$("nav.tabs a").forEach(a => a.dataset.v === v ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current"));
+  if (v === "pro") proEnter(); else clearInterval(P.timer);
+  if (v === "reserver") { loadBusy().then(renderBooking); }
+}
+
+(async function start(){
+  renderInfo();
+  await initApi();
+  renderPrestas();
+  bindBooking(); bindMine(); bindPro();
+  await loadBusy();
+  renderBooking();
+  addEventListener("hashchange", route);
+  route();
+})();
+</script>
+</body>
+</html>
